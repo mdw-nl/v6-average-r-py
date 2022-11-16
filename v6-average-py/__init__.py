@@ -12,7 +12,7 @@ def master(client, data, column_name):
     global average.
 
     Note that the master method also receives the (local) data of the
-    node. In most usecases this data argument is not used.
+    node. In most use cases this data argument is not used.
 
     The client, provided in the first argument, gives an interface to
     the central server. This is needed to create tasks (for the partial
@@ -45,11 +45,11 @@ def master(client, data, column_name):
         organization_ids=ids
     )
 
-    # Now we need to wait untill all organizations(/nodes) finished
+    # Now we need to wait until all organizations(/nodes) finished
     # their partial. We do this by polling the server for results. It is
     # also possible to subscribe to a websocket channel to get status
     # updates.
-    info("Waiting for resuls")
+    info("Waiting for results")
     task_id = task.get("id")
     task = client.get_task(task_id)
     while not task.get("complete"):
