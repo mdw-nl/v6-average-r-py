@@ -2,6 +2,7 @@ import time
 
 from vantage6.tools.util import info
 
+
 def master(client, data, column_name):
     """Combine partials to global model
 
@@ -19,7 +20,6 @@ def master(client, data, column_name):
     results) and collect their results later on. Note that this client
     is a different client than the client you use as a user.
     """
-
     # Info messages can help you when an algorithm crashes. These info
     # messages are stored in a log file which is send to the server when
     # either a task finished or crashes.
@@ -76,14 +76,13 @@ def RPC_average_partial(data, column_name):
     The data argument contains a pandas-dataframe containing the local
     data from the node.
     """
-
     # extract the column_name from the dataframe.
     info(f'Extracting column {column_name}')
     numbers = data[column_name]
 
     # compute the sum, and count number of rows
     info('Computing partials')
-    local_sum = numbers.sum()
+    local_sum = float(numbers.sum())
     local_count = len(numbers)
 
     # return the values as a dict
