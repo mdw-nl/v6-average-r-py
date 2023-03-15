@@ -52,7 +52,7 @@ def master(client, data, column_name):
     info("Waiting for resuls")
     task_id = task.get("id")
     task = client.get_task(task_id)
-    while not task.get("complete"):
+    while not task.get("status") == "completed":
         task = client.get_task(task_id)
         info("Waiting for results")
         time.sleep(1)
@@ -69,6 +69,7 @@ def master(client, data, column_name):
         global_count += output["count"]
 
     return {"average": global_sum / global_count}
+
 
 def RPC_average_partial(data, column_name):
     """Compute the average partial
