@@ -1,10 +1,13 @@
 import time
+import pandas as pd
 
 from vantage6.tools.util import info
 from vantage6.client.algorithm_client import AlgorithmClient
+from vantage6.tools.decorators import algorithm_client, data
 
 
-def master(client: AlgorithmClient, data, column_name):
+@algorithm_client
+def central_average(client: AlgorithmClient, column_name: str):
     """Combine partials to global model
 
     First we collect the parties that participate in the collaboration.
@@ -38,7 +41,7 @@ def master(client: AlgorithmClient, data, column_name):
     info('Requesting partial computation')
     task = client.task.create(
         input_={
-            'method': 'average_partial',
+            'method': 'partial_average',
             'kwargs': {
                 'column_name': column_name
             }
@@ -60,7 +63,7 @@ def master(client: AlgorithmClient, data, column_name):
 
     # Once we now the partials are complete, we can collect them.
     info("Obtaining results")
-    results = client.run.get(task_id=task.get("id"))
+    results = client.result.get(task_id=task.get("id"))
 
     # Now we can combine the partials to a global average.
     global_sum = 0
@@ -72,7 +75,8 @@ def master(client: AlgorithmClient, data, column_name):
     return {"average": global_sum / global_count}
 
 
-def RPC_average_partial(data, column_name):
+@data(1)
+def partial_average(data: pd.DataFrame, column_name: str):
     """Compute the average partial
 
     The data argument contains a pandas-dataframe containing the local
