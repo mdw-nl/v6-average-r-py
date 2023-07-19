@@ -46,7 +46,7 @@ def central_average(client: AlgorithmClient, column_name: str):
                 'column_name': column_name
             }
         },
-        organization_ids=ids
+        organizations=ids
     )
 
     # Now we need to wait untill all organizations(/nodes) finished
@@ -54,16 +54,11 @@ def central_average(client: AlgorithmClient, column_name: str):
     # also possible to subscribe to a websocket channel to get status
     # updates.
     info("Waiting for resuls")
-    task_id = task.get("id")
-    task = client.task.get(task_id)
-    while not task.get("status") == "completed":
-        task = client.task.get(task_id)
-        info("Waiting for results")
-        time.sleep(1)
+    client.wait_for_results(task_id=task.get("id"))
 
     # Once we now the partials are complete, we can collect them.
     info("Obtaining results")
-    results = client.result.get(task_id=task.get("id"))
+    results = client.result.from_task(task_id=task.get("id"))
 
     # Now we can combine the partials to a global average.
     global_sum = 0
