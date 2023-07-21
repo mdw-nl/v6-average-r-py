@@ -21,7 +21,6 @@ setup(
     python_requires='>=3.6',
     install_requires=[
         'vantage6-client',
-        # list your dependancies here:
-        # pandas, ...
+        'pandas'
     ]
 )
