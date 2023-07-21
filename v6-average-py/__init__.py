@@ -52,14 +52,12 @@ def central_average(client: AlgorithmClient, column_name: str):
     # their partial. We do this by polling the server for results. It is
     # also possible to subscribe to a websocket channel to get status
     # updates.
-    info("Waiting for resuls")
-    client.wait_for_results(task_id=task.get("id"))
-
-    # Once we now the partials are complete, we can collect them.
-    info("Obtaining results")
-    results = client.result.from_task(task_id=task.get("id"))
+    info("Waiting for results")
+    results = client.wait_for_results(task_id=task.get("id"))
+    info("Partial results are in!")
 
     # Now we can combine the partials to a global average.
+    info("Computing global average")
     global_sum = 0
     global_count = 0
     for output in results:
