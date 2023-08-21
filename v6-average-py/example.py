@@ -1,4 +1,4 @@
-from vantage6.tools.mock_client import MockAlgorithmClient
+from vantage6.algorithm.tools.mock_client import MockAlgorithmClient
 
 # Initialize the mock server. The datasets simulate the local datasets from
 # the node. In this case we have two parties having two different datasets:
@@ -37,7 +37,7 @@ average_partial_task = client.task.create(
             'column_name': 'age'
         }
     },
-    organization_ids=org_ids
+    organizations=org_ids
 )
 
 # You can directly obtain the result (we dont have to wait for nodes to
@@ -56,7 +56,7 @@ average_task = client.task.create(
             'column_name': 'age'
         }
     },
-    organization_ids=[org_ids[0]]
+    organizations=[org_ids[0]]
 )
 
 results = client.result.get(average_task.get("id"))
