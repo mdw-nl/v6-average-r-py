@@ -68,7 +68,7 @@ def central_average(client: AlgorithmClient, column_name: str):
 
 
 @data(1)
-def partial_average(data: pd.DataFrame, column_name: str):
+def partial_average(df: pd.DataFrame, column_name: str):
     """Compute the average partial
 
     The data argument contains a pandas-dataframe containing the local
@@ -76,7 +76,7 @@ def partial_average(data: pd.DataFrame, column_name: str):
     """
     # extract the column_name from the dataframe.
     info(f'Extracting column {column_name}')
-    numbers = data[column_name]
+    numbers = df[column_name]
 
     # compute the sum, and count number of rows
     info('Computing partials')

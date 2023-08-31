@@ -7,16 +7,20 @@ from vantage6.algorithm.tools.mock_client import MockAlgorithmClient
 # would be v6-average-py.
 client = MockAlgorithmClient(
     datasets=[
-        {
-            "database": "./v6-average-py/local/data.csv",
-            "type": "csv",
-            "input_data": {}
-        },
-        {
-            "database": "./v6-average-py/local/database.csv",
-            "type": "csv",
-            "input_data": {}
-        }
+        # Organization 1
+        [
+            {
+                "database": "./v6-average-py/local/data.csv",
+                "db_type": "csv",
+            },
+        ],
+        # Organization 2
+        [
+            {
+                "database": "./v6-average-py/local/data.csv",
+                "db_type": "csv",
+            },
+        ],
     ],
     module="v6-average-py"
 )
@@ -32,7 +36,7 @@ org_ids = ids = [organization["id"] for organization in organizations]
 # example we assume that both a.csv and b.csv contain a numerical column `age`.
 average_partial_task = client.task.create(
     input_={
-        'method': 'average_partial',
+        'method': 'partial_average',
         'kwargs': {
             'column_name': 'age'
         }
@@ -51,7 +55,7 @@ results = client.result.get(average_partial_task.get("id"))
 average_task = client.task.create(
     input_={
         'master': 1,
-        'method': 'master',
+        'method': 'central_average',
         'kwargs': {
             'column_name': 'age'
         }
@@ -59,5 +63,5 @@ average_task = client.task.create(
     organizations=[org_ids[0]]
 )
 
-results = client.result.get(average_task.get("id"))
+results = client.result.from_task(average_task.get("id"))
 print(results)
