@@ -65,3 +65,46 @@ average_task = client.task.create(
 
 results = client.result.from_task(average_task.get("id"))
 print(results)
+
+# try with preprocessing of the data
+client = MockAlgorithmClient(
+    datasets=[
+        # Organization 1
+        [
+            {
+                "database": "./v6-average-py/local/data.csv",
+                "db_type": "csv",
+                "preprocessing": [
+                    {
+                        "type": "filter_rangeee",
+                        "parameters": {
+                            "column": "Height",
+                            "min_": 150,
+                        }
+                    }
+                ]
+            },
+        ],
+        # Organization 2
+        [
+            {
+                "database": "./v6-average-py/local/data.csv",
+                "db_type": "csv",
+            },
+        ],
+    ],
+    module="v6-average-py"
+)
+average_task = client.task.create(
+    input_={
+        'master': 1,
+        'method': 'central_average',
+        'kwargs': {
+            'column_name': 'age'
+        }
+    },
+    organizations=[org_ids[0]]
+)
+
+results = client.result.from_task(average_task.get("id"))
+print(results)
