@@ -76,7 +76,7 @@ client = MockAlgorithmClient(
                 "db_type": "csv",
                 "preprocessing": [
                     {
-                        "type": "filter_rangeee",
+                        "type": "filter_range",
                         "parameters": {
                             "column": "Height",
                             "min_": 150,

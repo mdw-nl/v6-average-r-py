@@ -10,8 +10,14 @@ FROM harbor2.vantage6.ai/infrastructure/algorithm-base:latest
 ARG PKG_NAME="v6-average-py"
 
 # This will install your algorithm into this image.
-COPY . /app
+COPY ./algorithms/v6-average-py /app
 RUN pip install /app
+
+# TODO remove
+COPY ./vantage6-main/ /vantage6
+RUN pip install /vantage6/vantage6-common
+RUN pip install /vantage6/vantage6-client
+RUN pip install /vantage6/vantage6-algorithm-tools
 
 # This will run your algorithm when the Docker container is started. The
 # wrapper takes care of the IO handling (communication between node and
