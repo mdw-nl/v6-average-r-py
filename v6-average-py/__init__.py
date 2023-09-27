@@ -16,7 +16,7 @@ def central_average(client: AlgorithmClient, column_name: str):
     global average.
 
     Note that the master method also receives the (local) data of the
-    node. In most usecases this data argument is not used.
+    node. In most use cases this data argument is not used.
 
     The client, provided in the first argument, gives an interface to
     the central server. This is needed to create tasks (for the partial
@@ -48,7 +48,7 @@ def central_average(client: AlgorithmClient, column_name: str):
         organizations=ids
     )
 
-    # Now we need to wait untill all organizations(/nodes) finished
+    # Now we need to wait until all organizations(/nodes) finished
     # their partial. We do this by polling the server for results. It is
     # also possible to subscribe to a websocket channel to get status
     # updates.
