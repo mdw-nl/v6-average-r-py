@@ -3,7 +3,7 @@
 # different image here (e.g. python:3). In that case it is important that
 # `vantage6-client` is a dependancy of you project as this contains the wrapper
 # we are using in this example.
-FROM harbor2.vantage6.ai/infrastructure/algorithm-base:3.4.2
+FROM harbor2.vantage6.ai/infrastructure/algorithm-base:latest
 
 # Change this to the package name of your project. This needs to be the same
 # as what you specified for the name in the `setup.py`.
@@ -17,4 +17,4 @@ RUN pip install /app
 # wrapper takes care of the IO handling (communication between node and
 # algorithm). You dont need to change anything here.
 ENV PKG_NAME=${PKG_NAME}
-CMD python -c "from vantage6.tools.docker_wrapper import docker_wrapper; docker_wrapper('${PKG_NAME}')"
+CMD python -c "from vantage6.algorithm.tools.wrap import wrap_algorithm; wrap_algorithm('${PKG_NAME}')"

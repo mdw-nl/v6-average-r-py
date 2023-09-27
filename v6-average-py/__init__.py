@@ -1,8 +1,12 @@
-import time
+import pandas as pd
 
-from vantage6.tools.util import info
+from vantage6.algorithm.tools.util import info
+from vantage6.algorithm.client import AlgorithmClient
+from vantage6.algorithm.tools.decorators import algorithm_client, data
 
-def master(client, data, column_name):
+
+@algorithm_client
+def central_average(client: AlgorithmClient, column_name: str):
     """Combine partials to global model
 
     First we collect the parties that participate in the collaboration.
@@ -19,7 +23,6 @@ def master(client, data, column_name):
     results) and collect their results later on. Note that this client
     is a different client than the client you use as a user.
     """
-
     # Info messages can help you when an algorithm crashes. These info
     # messages are stored in a log file which is send to the server when
     # either a task finished or crashes.
@@ -27,7 +30,7 @@ def master(client, data, column_name):
 
     # Collect all organization that participate in this collaboration.
     # These organizations will receive the task to compute the partial.
-    organizations = client.get_organizations_in_my_collaboration()
+    organizations = client.organization.list()
     ids = [organization.get("id") for organization in organizations]
 
     # Request all participating parties to compute their partial. This
@@ -35,14 +38,14 @@ def master(client, data, column_name):
     # We've used a kwarg but is is also possible to use `args`. Although
     # we prefer kwargs as it is clearer.
     info('Requesting partial computation')
-    task = client.create_new_task(
+    task = client.task.create(
         input_={
-            'method': 'average_partial',
+            'method': 'partial_average',
             'kwargs': {
                 'column_name': column_name
             }
         },
-        organization_ids=ids
+        organizations=ids
     )
 
     # Now we need to wait until all organizations(/nodes) finished
@@ -50,18 +53,11 @@ def master(client, data, column_name):
     # also possible to subscribe to a websocket channel to get status
     # updates.
     info("Waiting for results")
-    task_id = task.get("id")
-    task = client.get_task(task_id)
-    while not task.get("complete"):
-        task = client.get_task(task_id)
-        info("Waiting for results")
-        time.sleep(1)
-
-    # Once we now the partials are complete, we can collect them.
-    info("Obtaining results")
-    results = client.get_results(task_id=task.get("id"))
+    results = client.wait_for_results(task_id=task.get("id"))
+    info("Partial results are in!")
 
     # Now we can combine the partials to a global average.
+    info("Computing global average")
     global_sum = 0
     global_count = 0
     for output in results:
@@ -70,20 +66,21 @@ def master(client, data, column_name):
 
     return {"average": global_sum / global_count}
 
-def RPC_average_partial(data, column_name):
+
+@data(1)
+def partial_average(df: pd.DataFrame, column_name: str):
     """Compute the average partial
 
     The data argument contains a pandas-dataframe containing the local
     data from the node.
     """
-
     # extract the column_name from the dataframe.
     info(f'Extracting column {column_name}')
-    numbers = data[column_name]
+    numbers = df[column_name]
 
     # compute the sum, and count number of rows
     info('Computing partials')
-    local_sum = numbers.sum()
+    local_sum = float(numbers.sum())
     local_count = len(numbers)
 
     # return the values as a dict

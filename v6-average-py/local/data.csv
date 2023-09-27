@@ -1,4 +1,4 @@
-Name,Sex,age,Height(in),Weight(lbs)
+Name,Sex,age,Weight,Height
 Alex,M,41,74,170
 Bert,M,42,68,166
 Carl,M,32,70,155
