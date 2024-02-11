@@ -1,13 +1,21 @@
-# This specifies our base image. This base image contains some commonly used
-# dependancies and an install from all vantage6 packages. You can specify a
-# different image here (e.g. python:3). In that case it is important that
-# `vantage6-client` is a dependancy of you project as this contains the wrapper
-# we are using in this example.
 FROM harbor2.vantage6.ai/infrastructure/algorithm-base:latest
+
+# install R debian repository
+# See: https://cran.r-project.org/bin/linux/debian/#secure-apt
+RUN apt update -y \
+    && apt install -y --no-install-recommends gnupg \
+    && gpg --keyserver keyserver.ubuntu.com \
+           --recv-key '95C0FAF38DB3CCAD0C080A7BDC78B2DDEABC47B7' \
+    && gpg --armor --export '95C0FAF38DB3CCAD0C080A7BDC78B2DDEABC47B7' > /etc/apt/trusted.gpg.d/cran_debian_key.asc \
+    && echo 'deb http://cloud.r-project.org/bin/linux/debian bullseye-cran40/' > /etc/apt/sources.list.d/r-project.list
+
+# install R
+RUN apt update -y && apt install -y r-base
+
 
 # Change this to the package name of your project. This needs to be the same
 # as what you specified for the name in the `setup.py`.
-ARG PKG_NAME="v6-average-py"
+ARG PKG_NAME="v6-average-r-py"
 
 # This will install your algorithm into this image.
 COPY . /app

@@ -7,11 +7,12 @@
 
 --------------------
 
-# v6-average-py
-This algoithm is part of the [vantage6](https://vantage6.ai) solution. Vantage6 allowes to execute computations on federated datasets.
 
-## Read more
-This algorithm is part of the [documentation](https://docs.vantage6.ai/v/2.0.0/algorithm-development/create-new-algorithm).
+# What's this?
+
+This is a simple example of an algortihm using R and python. The goal is to demo several ways of interacting with R within a vantage6 algorithm.
+
+It's based on the example [average algorithm available here](https://github.com/IKNL/v6-average-py).
 
 ------------------------------------
 > [vantage6](https://vantage6.ai)

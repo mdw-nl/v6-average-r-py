@@ -11,16 +11,18 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 # Here you specify the meta-data of your package. The `name` argument is
 # needed in some other steps.
 setup(
-    name='v6-average-py',
+    name='v6-average-r-py',
     version="1.0.0",
-    description='vantage6 average',
+    description='vantage6 algorithm to compute average using R',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/IKNL/v6-average-py',
+    url='https://github.com/mdw-nl/v6-average-r-py',
     packages=find_packages(),
+    include_package_data=True,
     python_requires='>=3.10',
     install_requires=[
         'vantage6-algorithm-tools',
-        'pandas'
+        'pandas',
+        'rpy2'
     ]
 )

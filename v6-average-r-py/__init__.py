@@ -4,6 +4,15 @@ from vantage6.algorithm.tools.util import info
 from vantage6.algorithm.client import AlgorithmClient
 from vantage6.algorithm.tools.decorators import algorithm_client, data
 
+# high-level interface
+import rpy2.robjects as ro
+from rpy2.robjects import pandas2ri
+# low-level interface
+import rpy2.rinterface as rinterface
+
+
+import json
+from pathlib import Path
 
 @algorithm_client
 def central_average(client: AlgorithmClient, column_name: str):
@@ -68,23 +77,41 @@ def central_average(client: AlgorithmClient, column_name: str):
 
 
 @data(1)
-def partial_average(df: pd.DataFrame, column_name: str):
+def partial_average(pd_df: pd.DataFrame, column_name: str):
     """Compute the average partial
 
     The data argument contains a pandas-dataframe containing the local
     data from the node.
     """
-    # extract the column_name from the dataframe.
-    info(f'Extracting column {column_name}')
-    numbers = df[column_name]
+    info('Converting pandas dataframe to R dataframe')
+    with (ro.default_converter + pandas2ri.converter).context():
+        r_from_pd_df = ro.conversion.get_conversion().py2rpy(pd_df)
 
-    # compute the sum, and count number of rows
-    info('Computing partials')
-    local_sum = float(numbers.sum())
-    local_count = len(numbers)
 
-    # return the values as a dict
-    return {
-        "sum": local_sum,
-        "count": local_count
-    }
+    current_dir = Path(__file__).parent
+    with open(current_dir / 'average.R', 'r') as file:
+        r_script_content = file.read()
+
+    info('Setting variables in R')
+    ro.globalenv['pyin_column_name'] = column_name
+    ro.globalenv['pyin_df'] = r_from_pd_df
+
+    # execute R script
+    info('Executing R script')
+    ro.r(r_script_content)
+
+    info('Converting R dataframe to pandas dataframe')
+    df_from_r = ro.r['pyout_result']
+    with (ro.default_converter + ro.pandas2ri.converter).context():
+        pd_from_r_df = ro.conversion.get_conversion().rpy2py(df_from_r)
+
+
+    # vantage6-algorithm-tools python wrapper's @data decorator (used for this
+    # function) will call json.dumps() on whatever we return from this
+    # function.  As a hacky temporary workaround, we must convert our dataframe
+    # with results to a dictionary -- which is an object json.dumps() will be
+    # able to take in (serializable)
+    json_str = pd_from_r_df.to_json(orient='records')
+    # When converting to 'records' we get a list. But v6-average-py expects
+    # just a dict
+    return json.loads(json_str)[0]
