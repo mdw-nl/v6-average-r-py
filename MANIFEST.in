@@ -1,1 +1,2 @@
 include v6-average-r-py/*.R
+include v6-average-r-py/*.r

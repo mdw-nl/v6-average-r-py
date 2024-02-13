@@ -17,6 +17,9 @@ RUN apt update -y && apt install -y r-base
 # as what you specified for the name in the `setup.py`.
 ARG PKG_NAME="v6-average-r-py"
 
+# Install your R script package dependencies
+RUN R -e "install.packages(c('argparse', 'readr'))"
+
 # This will install your algorithm into this image.
 COPY . /app
 RUN pip install /app
